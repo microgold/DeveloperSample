@@ -12,19 +12,55 @@ namespace DeveloperSample.ClassRefactoring
         None, Coconut
     }
 
-    public class SwallowFactory
+    // Strategy interface for airspeed calculation
+    public interface IAirspeedCalculator
     {
-        public Swallow GetSwallow(SwallowType swallowType) => new Swallow(swallowType);
+        double CalculateAirspeed(SwallowLoad load);
     }
 
+    // Concrete strategies for different swallow types
+    public class AfricanSwallowAirspeedCalculator : IAirspeedCalculator
+    {
+        public double CalculateAirspeed(SwallowLoad load)
+        {
+            return load == SwallowLoad.None ? 22 : 18;
+        }
+    }
+
+    public class EuropeanSwallowAirspeedCalculator : IAirspeedCalculator
+    {
+        public double CalculateAirspeed(SwallowLoad load)
+        {
+            return load == SwallowLoad.None ? 20 : 16;
+        }
+    }
+
+    // Factory class
+    public class SwallowFactory
+    {
+        public Swallow GetSwallow(SwallowType swallowType)
+        {
+            IAirspeedCalculator calculator = swallowType switch
+            {
+                SwallowType.African => new AfricanSwallowAirspeedCalculator(),
+                SwallowType.European => new EuropeanSwallowAirspeedCalculator(),
+                _ => throw new ArgumentException("Invalid swallow type")
+            };
+
+            return new Swallow(calculator);
+        }
+    }
+
+    // Swallow class using strategy pattern for calculation
     public class Swallow
     {
-        public SwallowType Type { get; }
+        private readonly IAirspeedCalculator _airspeedCalculator;
+
         public SwallowLoad Load { get; private set; }
 
-        public Swallow(SwallowType swallowType)
+        public Swallow(IAirspeedCalculator airspeedCalculator)
         {
-            Type = swallowType;
+            _airspeedCalculator = airspeedCalculator ?? throw new ArgumentNullException(nameof(airspeedCalculator));
         }
 
         public void ApplyLoad(SwallowLoad load)
@@ -34,23 +70,7 @@ namespace DeveloperSample.ClassRefactoring
 
         public double GetAirspeedVelocity()
         {
-            if (Type == SwallowType.African && Load == SwallowLoad.None)
-            {
-                return 22;
-            }
-            if (Type == SwallowType.African && Load == SwallowLoad.Coconut)
-            {
-                return 18;
-            }
-            if (Type == SwallowType.European && Load == SwallowLoad.None)
-            {
-                return 20;
-            }
-            if (Type == SwallowType.European && Load == SwallowLoad.Coconut)
-            {
-                return 16;
-            }
-            throw new InvalidOperationException();
+            return _airspeedCalculator.CalculateAirspeed(Load);
         }
     }
 }

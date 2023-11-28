@@ -7,15 +7,15 @@ namespace DeveloperSample.Syncing
     public class SyncTest
     {
         [Fact]
-        public void CanInitializeCollection()
+        public async void CanInitializeCollection()
         {
             var debug = new SyncDebug();
             var items = new List<string> { "one", "two" };
-            var result = debug.InitializeList(items);
+            var result = await debug.InitializeList(items);
             Assert.Equal(items.Count, result.Count);
         }
 
-        [Fact(Skip="Not implemented")]
+        [Fact]
         public void ItemsOnlyInitializeOnce()
         {
             var debug = new SyncDebug();

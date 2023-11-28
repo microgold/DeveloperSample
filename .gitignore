@@ -3,3 +3,5 @@ obj
 node_modules
 debug
 release
+/.vs/DeveloperSample
+/DeveloperSample.sln
